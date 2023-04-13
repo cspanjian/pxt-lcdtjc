@@ -41,10 +41,7 @@ const enum LCDLightness{
 }
 //% weight=10 color=#1d8045 icon="\uf108" block="LCD"
 namespace LCD {
-    
-
-    let receivedLen = 0;
-    let receivedBuffer = pins.createBuffer(25);
+    let lcdDir=0; //屏幕方向：每次调用旋转屏幕，都是换一个方向，数字在0，1，2，3之间轮动
 
     /**
      * 初始化LCD
@@ -101,6 +98,17 @@ namespace LCD {
     //% blockId="tuneLCDLightness" block="调整屏幕亮度为 %lightness"
     export function tuneLCDLightness(lightness: LCDLightness): void {
         let cmdTxt = "BL(" + lightness.toString() + "); \r\n";
+        sendCmdToLCD(cmdTxt);
+    }
+
+    //% weight=80
+    //% blockId="rotateLCD" block="旋转屏幕"
+    export function rotateLCD(): void {
+        lcdDir +=1;
+        if (lcdDir >=4){
+            lcdDir=0;
+        }
+        let cmdTxt = "DIR(" + lcdDir + "); \r\n";
         sendCmdToLCD(cmdTxt);
     }
 
