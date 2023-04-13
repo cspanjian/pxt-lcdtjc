@@ -9,7 +9,7 @@ const enum LCDFontSize {
     //% block="中"
     Medium = 24,   //DC24
     //% block="大"
-    Maximal = 32.  //DC32
+    Maximal = 32  //DC32
 }
 //文字颜色
 const enum LCDFontColor {
@@ -23,10 +23,21 @@ const enum LCDFontColor {
     Blue = 3,
     //% block="黄"
     Yellow = 4,
-    //% block="灰"
-    Grey = 7,
+    //% block="浅灰"
+    LightGrey = 7,
+    //% block="深灰"
+    DarkGrey = 8,
     //% block="白"
     White = 15
+}
+//屏幕亮度
+const enum LCDLightness{
+    //% block="暗"
+    Minimal = 200,  
+    //% block="中"
+    Medium = 128,   
+    //% block="亮"
+    Maximal = 0  
 }
 //% weight=10 color=#1d8045 icon="\uf108" block="LCD"
 namespace LCD {
@@ -49,6 +60,7 @@ namespace LCD {
             pinRX,
             BaudRate.BaudRate115200
         )
+        basic.pause(1000);
     }
 
     /**
@@ -73,13 +85,28 @@ namespace LCD {
             default:
                 cmdTxt += "DC16(";
         }
-        cmdTxt += posX + "," + posY + ",'" + text + "'," + fontColor +");\r\n";
+        cmdTxt += posX + "," + posY + ",'" + text + "'," + fontColor.toString() +");\r\n";
         
-        sendShowTextCmdToLCD(cmdTxt);
+        sendCmdToLCD(cmdTxt);
     }  
 
-    //% advanced=true shim=LCD::sendShowTextCmdToLCD
-    function sendShowTextCmdToLCD(text: string): void {
-        return 
+    //% weight=80
+    //% blockId="clearLCD" block="用颜色 %fontColor 清空屏幕"
+    export function clearLCD(fontColor: LCDFontColor): void {
+        let cmdTxt = "CLR(" + fontColor.toString() +"); \r\n";
+        sendCmdToLCD(cmdTxt);
+    }
+
+    //% weight=80
+    //% blockId="tuneLCDLightness" block="调整屏幕亮度为 %lightness"
+    export function tuneLCDLightness(lightness: LCDLightness): void {
+        let cmdTxt = "BL(" + lightness.toString() + "); \r\n";
+        sendCmdToLCD(cmdTxt);
+    }
+
+    //向LCD发送指令
+    function sendCmdToLCD(cmdTxt: string){
+        serial.writeString(cmdTxt);
+        basic.pause(100);
     }
 }
