@@ -1,7 +1,7 @@
 {
-    "name": "LCD扩展模块",
+    "name": "LCD扩展模块tjc",
     "version": "0.0.2",
-    "description": "這是專為micro:bit提供的NFC積木(This is the NFC blocks)",
+    "description": "LCDTjc",
     "license": "MIT",
     "dependencies": {
         "core": "*",
