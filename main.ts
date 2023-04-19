@@ -1,7 +1,12 @@
 
 /**
  * LCD显示屏的扩展包 TJC
- * 还是只能显示英文和数字，不过英文的标点可以显示了。中文还是不行
+ * 只能显示英文、数字、英文标点
+ * 中文不行的原因在于：microbit认为自己的cpu处理能力比较弱，所以不支持中文的处理，
+ * 所以Buffer.fromUTF8拿到的其实是把中文当作ASCII码处理后的结果
+ * 如果要显示几个特定的中文文字，可以拿USART HMI取得编码后，直接用serial写字节数组的方式写出来即可
+ * 但是无法自由的使用任何文字中文文字
+ * 本质是microbit不对中文文字解码成UTF8字节数组
  */
 //文字大小
 const enum LCDFontSize {
@@ -132,9 +137,8 @@ namespace LCDTjc {
                 break;
         }
         let cmdTxt = "main."+tVar+".txt=\""+text+"\"";
-        let buff = Buffer.fromUTF8(cmdTxt);
-        buff = buff.concat(cmdEndingBuff);
-        serial.writeBuffer(buff);
+        serial.writeString(cmdTxt);
+        serial.writeBuffer(cmdEndingBuff);
         basic.pause(50);
     }
 }
