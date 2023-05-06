@@ -64,7 +64,7 @@ const enum TextLineNum {
 }
 //% weight=10 color=#1d8045 icon="\uf108" block="LCDTjc"
 namespace LCDTjc {
-    let cmdEndingBuff: Buffer = Buffer.fromArray([0XFF, 0XFF, 0XFF]);
+    let cmdEndingBuffer: Buffer = Buffer.fromArray([0XFF, 0XFF, 0XFF]);
     /**
      * 初始化LCD
      * 这里的RX指的是LCD的RX和micro:bit连接的引脚，TX指的是LCD的TX和micro:bit连接的引脚，不需要做TX和RX互换
@@ -98,6 +98,16 @@ namespace LCDTjc {
         sendTxtCmd(lineNum,text);
     }  
 
+    /**
+     * 在LCD上显示byte array代表的字符串
+    */
+    //% weight=80
+    //% blockId="showByteArrayString" 
+    //% block="在 %lineNum 显示字节数组表示的字符串 %byteArray"
+    export function showByteArrayString(lineNum: TextLineNum, byteArray: number[]): void {
+        sendBufferCmd(lineNum, Buffer.fromArray(byteArray));
+    }
+
     //% weight=80
     //% blockId="clearLCD" block="清空屏幕"
     export function clearLCD(): void {
@@ -112,6 +122,11 @@ namespace LCDTjc {
 
     //生成给LCD发的命令
     function sendTxtCmd(lineNum: TextLineNum, text: string): void{
+        sendBufferCmd(lineNum, Buffer.fromUTF8(text));
+    }
+
+    //生成给LCD发的命令
+    function sendBufferCmd(lineNum: TextLineNum, byteBuffer: Buffer): void {
         let tVar = "t0";
         switch (lineNum) {
             case TextLineNum.Line1:
@@ -136,9 +151,13 @@ namespace LCDTjc {
                 tVar = "t6";
                 break;
         }
-        let cmdTxt = "main."+tVar+".txt=\""+text+"\"";
+    //    let cmdTxt = "main." + tVar + ".txt=\"" + text + "\"";
+        let cmdTxt = "main." + tVar + ".txt=\"";
         serial.writeString(cmdTxt);
-        serial.writeBuffer(cmdEndingBuff);
+        serial.writeBuffer(byteBuffer);
+        cmdTxt = "\"";
+        serial.writeString(cmdTxt);
+        serial.writeBuffer(cmdEndingBuffer);
         basic.pause(50);
     }
 }
