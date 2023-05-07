@@ -85,7 +85,7 @@ namespace LCDTjc {
         serial.writeBuffer(buff);
         basic.pause(100);
         //显示初始化结束的信息
-        showString(TextLineNum.Line1, "LCD was initialized successfully!");
+        //showString(TextLineNum.Line1, "LCD was initialized successfully!");
     }
 
     /**
